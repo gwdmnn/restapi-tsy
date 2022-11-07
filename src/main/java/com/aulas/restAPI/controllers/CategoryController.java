@@ -16,9 +16,14 @@ public class CategoryController {
     @Autowired
     CategoryService service;
 
+    // @GetMapping("/parametros")
+    //public String getAll(@RequestParam ("tipo") String tipo){
+    //    return tipo;
+   // }
+
     @GetMapping
-    public ResponseEntity<List<Categoria>> consultarCategorias(){
-        List<Categoria> lista = service.consultar();
+    public ResponseEntity<List<Categoria>> consultarCategorias(@RequestParam(value = "status", defaultValue = "") String status){ // --> categorias?status=
+        List<Categoria> lista = service.consultar(status);
         return ResponseEntity.status(HttpStatus.OK).body(lista);
 
     }

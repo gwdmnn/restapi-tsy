@@ -1,7 +1,11 @@
 package com.aulas.restAPI.services;
 
+import com.aulas.restAPI.entities.Categoria;
 import com.aulas.restAPI.entities.Produto;
+import com.aulas.restAPI.enums.Status;
+import com.aulas.restAPI.repositories.CategoryRepository;
 import com.aulas.restAPI.repositories.ProdutoRepository;
+import com.aulas.restAPI.services.exceptions.InativeCategoryException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,21 +17,30 @@ import java.util.Optional;
 @Service
 public class ProductService {
     @Autowired
-    ProdutoRepository ProductRepository;
+    ProdutoRepository productRepository;
+
+    @Autowired
+    CategoryRepository categoryRepository;
+
 
     public List<Produto> consultar(){
-        return ProductRepository.findAll();
+        return productRepository.findAll();
     }
 
     public Produto consultarById(Long id){
-        Optional<Produto> obj = ProductRepository.findById(id);
+        Optional<Produto> obj = productRepository.findById(id);
         Produto prod = obj.orElseThrow(()-> new EntityNotFoundException("Produto não encontrado"));
         return prod;
     }
 
     @Transactional
     public Produto salvar(Produto produto){
-        return ProductRepository.save(produto);
+        Categoria cat = categoryRepository.getReferenceById(produto.getCategoria().getId());
+        if (cat.getStatus() == Status.INATIVA){
+            throw new InativeCategoryException("Categoria inativa");
+        }
+
+        return productRepository.save(produto);
     }
 
     public Produto alterar(Long idProduto, Produto produto){
@@ -42,7 +55,7 @@ public class ProductService {
     @Transactional
     public void excluir(long idProduto){
         Produto p = this.consultarById(idProduto);
-        ProductRepository.delete(p);
+        productRepository.delete(p);
 
     }
 

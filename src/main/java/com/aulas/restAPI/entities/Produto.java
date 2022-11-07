@@ -15,6 +15,17 @@ public class Produto {
     private String descricao;
     private Float preco;
     private Float estoque;
+    @ManyToOne
+    private Categoria categoria;
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+
 
     public long getId() {
         return id;

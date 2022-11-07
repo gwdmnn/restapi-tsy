@@ -1,5 +1,6 @@
 package com.aulas.restAPI.controllers.exceptions;
 
+import com.aulas.restAPI.services.exceptions.InativeCategoryException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -33,6 +34,18 @@ public class ResourceExceptionHandler {
         err.setStatus(HttpStatus.BAD_REQUEST.value());
         err.setError("Campo obrigatório");
         err.setMessage(e.getFieldError().getDefaultMessage());
+        err.setPath(req.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+    }
+
+    @ExceptionHandler (InativeCategoryException.class)
+    public ResponseEntity<StandardError> inativeCategory(InativeCategoryException e, HttpServletRequest req){
+
+        StandardError err = new StandardError();
+        err.setTimeStamp(Instant.now());
+        err.setStatus(HttpStatus.BAD_REQUEST.value());
+        err.setError("Recurso inativo");
+        err.setMessage(e.getMessage());
         err.setPath(req.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }

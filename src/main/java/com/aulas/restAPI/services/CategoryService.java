@@ -1,13 +1,18 @@
 package com.aulas.restAPI.services;
 
+import com.aulas.restAPI.enums.Status;
+import com.aulas.restAPI.repositories.ProdutoRepository;
+import com.aulas.restAPI.services.ProductService;
 import com.aulas.restAPI.controllers.CategoryController;
 import com.aulas.restAPI.entities.Categoria;
+import com.aulas.restAPI.entities.Produto;
 import com.aulas.restAPI.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,10 +21,20 @@ public class CategoryService {
 
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    ProdutoRepository produtoRepository;
 
-    public List<Categoria> consultar(){
-        return categoryRepository.findAll();
+    public List<Categoria> consultar(String status){
+        if (status.equalsIgnoreCase("ATIVA")){
+            return categoryRepository.findAllAtivo();
+        }
+        if (status.equalsIgnoreCase("INATIVA")){
+            return categoryRepository.findAllInativo();
 
+        }
+        else{
+            return categoryRepository.findAll();
+        }
     }
 
     public Categoria salvar(Categoria c){
@@ -43,13 +58,15 @@ public class CategoryService {
 
     @Transactional
     public void excluir(long idCategoria){
-        Categoria c = this.consultarById(idCategoria);
-        categoryRepository.delete(c);
+        Categoria cat = this.consultarById(idCategoria);
 
+        List<Produto> lista = produtoRepository.findByCategoria(cat);
+        if(lista.size() > 0){
+            cat.setStatus(Status.INATIVA);
+            categoryRepository.save(cat);
+        }else{
+            categoryRepository.delete(cat);
+        }
     }
-
-
-
-
-
 }
+
