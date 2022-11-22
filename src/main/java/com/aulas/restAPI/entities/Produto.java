@@ -3,6 +3,7 @@ package com.aulas.restAPI.entities;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.Instant;
 
 @Entity
 @Table(name = "Tb_produto")
@@ -17,6 +18,25 @@ public class Produto {
     private Float estoque;
     @ManyToOne
     private Categoria categoria;
+
+    @Column(columnDefinition = "DATETIME")
+    private Instant createdAt; // -->Dados para auditoria (PRODUTO QUANDO CRIADO)
+
+    @PrePersist
+    public void prePersist(){
+        createdAt = Instant.now();
+    }
+
+    @Column(columnDefinition = "DATETIME")
+    private Instant updatedAt;  // -->Dados para auditoria (PRODUTO QUANDO ATUALIZADO)
+
+    @PreUpdate
+    public void preUpdate(){
+        updatedAt = Instant.now();
+    }
+
+
+
     public Categoria getCategoria() {
         return categoria;
     }
@@ -24,8 +44,6 @@ public class Produto {
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
-
-
 
     public long getId() {
         return id;

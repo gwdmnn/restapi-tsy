@@ -1,8 +1,9 @@
 package com.aulas.restAPI.services;
 
+import com.aulas.restAPI.dtos.ProductDTO;
 import com.aulas.restAPI.entities.Categoria;
 import com.aulas.restAPI.entities.Produto;
-import com.aulas.restAPI.enums.Status;
+import com.aulas.restAPI.entities.enums.Status;
 import com.aulas.restAPI.repositories.CategoryRepository;
 import com.aulas.restAPI.repositories.ProdutoRepository;
 import com.aulas.restAPI.services.exceptions.InativeCategoryException;
@@ -21,6 +22,8 @@ public class ProductService {
 
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    CategoryService serviceCategoria;
 
 
     public List<Produto> consultar(){
@@ -34,22 +37,39 @@ public class ProductService {
     }
 
     @Transactional
-    public Produto salvar(Produto produto){
-        Categoria cat = categoryRepository.getReferenceById(produto.getCategoria().getId());
+    public ProductDTO salvar(ProductDTO produtoDTO){
+        Categoria cat = categoryRepository.getReferenceById(produtoDTO.getCategoria().getId());
         if (cat.getStatus() == Status.INATIVA){
             throw new InativeCategoryException("Categoria inativa");
         }
+        Produto prod = new Produto();
+        prod.setDescricao(produtoDTO.getDescricao());
+        prod.setPreco(produtoDTO.getPreco());
+        prod.setEstoque(produtoDTO.getEstoque());
+        prod.setCategoria(produtoDTO.getCategoria());
 
-        return productRepository.save(produto);
+        Produto entidadeProduto = productRepository.save(prod);
+        ProductDTO retornoDTO = new ProductDTO(entidadeProduto);
+
+        return retornoDTO;
     }
 
-    public Produto alterar(Long idProduto, Produto produto){
-        Produto p = this.consultarById(idProduto);
+    @Transactional
+    public ProductDTO alterar(Long idProduto, ProductDTO produtoDTO){
+        Categoria cat = serviceCategoria.consultarById(produtoDTO.getCategoria().getId());
 
-        p.setDescricao(produto.getDescricao());
-        p.setPreco(produto.getPreco());
-        p.setEstoque(produto.getEstoque());
-        return this.salvar(p);
+        if(cat.getStatus() == Status.INATIVA){
+            throw new InativeCategoryException("Categoria inativa");
+        }
+        Produto prod = new Produto();
+        prod.setDescricao(produtoDTO.getDescricao());
+        prod.setPreco(produtoDTO.getPreco());
+        prod.setEstoque(produtoDTO.getEstoque());
+        prod.setCategoria(produtoDTO.getCategoria());
+
+        Produto entidadeProduto = productRepository.save(prod);
+        ProductDTO retornoDTO = new ProductDTO(entidadeProduto);
+        return retornoDTO;
     }
 
     @Transactional

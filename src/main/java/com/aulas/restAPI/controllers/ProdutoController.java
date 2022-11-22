@@ -1,5 +1,6 @@
 package com.aulas.restAPI.controllers;
 
+import com.aulas.restAPI.dtos.ProductDTO;
 import com.aulas.restAPI.entities.Produto;
 import com.aulas.restAPI.repositories.ProdutoRepository;
 import com.aulas.restAPI.services.ProductService;
@@ -24,9 +25,8 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.OK).body(lista);
     }
     @PostMapping
-    public ResponseEntity<Produto> salvar(@Valid @RequestBody Produto produto){
-        Produto prod = service.salvar(produto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(prod);
+    public ResponseEntity<ProductDTO> salvar(@Valid @RequestBody ProductDTO produtoDTO){
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(produtoDTO));
     }
     @GetMapping("/{idproduto}")
     public ResponseEntity<Produto> consultarById(@PathVariable("idproduto") Long idproduto){
@@ -35,8 +35,8 @@ public class ProdutoController {
 
     @PutMapping("/{idproduto}")
     public ResponseEntity<Object> alterar(@PathVariable("idproduto") Long idproduto,
-                                          @Valid @RequestBody Produto produto){
-        return ResponseEntity.status(HttpStatus.OK).body(service.alterar(idproduto,produto));
+                                          @Valid @RequestBody ProductDTO produtoDTO){
+        return ResponseEntity.status(HttpStatus.OK).body(service.alterar(idproduto,produtoDTO));
     }
 
     @DeleteMapping ("/{idProduto}")

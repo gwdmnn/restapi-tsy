@@ -1,6 +1,6 @@
 package com.aulas.restAPI.entities;
 
-import com.aulas.restAPI.enums.Status;
+import com.aulas.restAPI.entities.enums.Status;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

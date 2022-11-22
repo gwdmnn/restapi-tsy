@@ -1,4 +1,4 @@
-package com.aulas.restAPI.enums;
+package com.aulas.restAPI.entities.enums;
 
 public enum Status {
     ATIVA,
